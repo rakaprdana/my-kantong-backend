@@ -6,6 +6,11 @@ export const OutcomeRoute = Router();
 
 OutcomeRoute.post("/outcome", authMiddleware, OutcomeController.inputOutcome);
 OutcomeRoute.get(
+  "/outcome/total",
+  authMiddleware,
+  OutcomeController.getTotalOutcome,
+);
+OutcomeRoute.get(
   "/outcome",
   authMiddleware,
   OutcomeController.getAllInfoOutcome,

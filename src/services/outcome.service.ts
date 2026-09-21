@@ -24,4 +24,12 @@ export class OutcomeService {
     );
     return deleted;
   };
+  static getTotalOutcome = async () => {
+    const resultTotal = await Outcome.aggregate([
+      { $match: { is_delete: false } },
+      { $group: { _id: null, total: { $sum: "$outcome" } } },
+    ]);
+
+    return resultTotal[0]?.total ?? 0;
+  };
 }

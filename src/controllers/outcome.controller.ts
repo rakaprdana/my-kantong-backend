@@ -77,4 +77,16 @@ export class OutcomeController {
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
+  static getTotalOutcome = async (_: Request, res: Response) => {
+    try {
+      const total = await OutcomeService.getTotalOutcome();
+      return res
+        .status(200)
+        .json(toAPIResponse(200, true, responses.successGetItem, { total }));
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
 }
