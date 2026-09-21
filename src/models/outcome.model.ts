@@ -6,6 +6,7 @@ const outcomeSchema = new Schema({
   category: { type: String },
   information: { type: String },
   is_delete: { type: Boolean, default: false },
+  amountTotal: { type: Number },
 });
 
 export const Outcome = model("Outcome", outcomeSchema);

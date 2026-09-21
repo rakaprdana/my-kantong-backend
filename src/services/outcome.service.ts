@@ -9,7 +9,7 @@ export class OutcomeService {
   };
 
   static getInfoOutcome = async (page: number, limit: number) => {
-    return paginate(Outcome, { is_deleted: false }, page, limit);
+    return paginate(Outcome, { is_delete: false }, page, limit);
   };
 
   static getInfoOutcomeById = async (id: string) => {

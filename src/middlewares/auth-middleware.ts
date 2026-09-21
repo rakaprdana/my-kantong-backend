@@ -1,42 +1,40 @@
 import { NextFunction, Response } from "express";
-import { AuthRequest } from "../interfaces/auth-request";
 import jwt from "jsonwebtoken";
-import { User } from "../models/user.model";
-import { toAPIResponse } from "../const/responses";
-import { responses } from "../const/const";
+import { getEnv } from "../utils/getEnv";
+import { CustomRequest } from "../interfaces/custom-req";
 import { IUser } from "../interfaces/user";
-export const AuthMiddleware = async (
-  req: AuthRequest,
-  res: Response,
+import { CustomErrors } from "../interfaces/custom-error";
+export const authMiddleware = (
+  req: CustomRequest,
+  _: Response,
   next: NextFunction,
 ) => {
-  let token: string;
-  if (
-    req.headers.authorization &&
-    req.headers.authorization.startsWith("Bearer ")
-  ) {
-    try {
-      token = req.headers.authorization.split(" ")[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
-        id: string;
-      };
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    return next(
+      new CustomErrors(
+        401,
+        "Unauthorized",
+        "Token not provided or invalid format",
+      ),
+    );
+  }
 
-      const user = await User.findById(decoded.id).select("-password");
-      if (!user) {
-        res
-          .status(404)
-          .json(toAPIResponse(404, false, responses.errorNotFound));
+  const token = authHeader.split(" ")[1];
+  if (token) {
+    jwt.verify(token, getEnv("JWT_SECRET"), (err, decoded) => {
+      if (err) {
+        if (err.name === "TokenExpiredError") {
+          return next(new CustomErrors(403, "Forbidden", "Token expired"));
+        } else if (err.name === "JsonWebTokenError") {
+          return next(new CustomErrors(403, "Forbidden", "Invalid token"));
+        }
+        return next(
+          new CustomErrors(403, "Forbidden", "Token verification failed"),
+        );
       }
-      req.user = user as unknown as IUser;
+      req.user = decoded as unknown as IUser;
       next();
-    } catch (error) {
-      res.status(400).json(toAPIResponse(400, false, "Invalid token"));
-    }
-  } else {
-    res
-      .status(401)
-      .json(
-        toAPIResponse(401, false, "Access denied, please check your token"),
-      );
+    });
   }
 };

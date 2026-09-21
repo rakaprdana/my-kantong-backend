@@ -41,4 +41,40 @@ export class OutcomeController {
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
+  static getOutcomeById = async (req: Request, res: Response) => {
+    try {
+      const outcomeId = req.params.id;
+      const outcome = await OutcomeService.getInfoOutcomeById(
+        outcomeId as string,
+      );
+      if (!outcome) {
+        res.status(400).json(toAPIResponse(400, false, responses.errorGetItem));
+        return res
+          .status(200)
+          .json(toAPIResponse(200, true, responses.successGetItem, outcome));
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
+  static deleteOutcome = async (req: Request, res: Response) => {
+    try {
+      const outcomeId = req.params.id;
+      const outcome = await OutcomeService.deletedOutcome(outcomeId as string);
+      if (!outcome) {
+        res
+          .status(400)
+          .json(toAPIResponse(400, false, responses.errorDeleteItem));
+        return res
+          .status(200)
+          .json(toAPIResponse(200, true, responses.successDeleteItem, outcome));
+      }
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
 }
