@@ -4,6 +4,7 @@ import cors from "cors";
 import { UserRoute } from "./routes/user.route";
 import corsOptions from "./config/cors";
 import { OutcomeRoute } from "./routes/outcome.route";
+import { IncomeRoute } from "./routes/income.route";
 
 dotenv.config();
 const app = express();
@@ -13,5 +14,6 @@ app.use(cors(corsOptions));
 
 app.use("/api/auth", UserRoute);
 app.use("/api", OutcomeRoute);
+app.use("/api", IncomeRoute);
 
 export default app;

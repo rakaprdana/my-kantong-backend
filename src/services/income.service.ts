@@ -11,4 +11,10 @@ export class IncomeServices {
   static getInfoIncome = async (page: number, limit: number) => {
     return paginate(Income, {}, page, limit);
   };
+  static getTotalIncome = async () => {
+    const resultTotal = await Income.aggregate([
+      { $group: { _id: null, total: { $sum: "$income" } } },
+    ]);
+    return resultTotal[0]?.total ?? 0;
+  };
 }

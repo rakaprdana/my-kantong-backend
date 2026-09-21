@@ -15,9 +15,11 @@ export class IncomeController {
 
       return res
         .status(201)
-        .json(toAPIResponse(200, true, responses.successCreateItem));
+        .json(toAPIResponse(201, true, responses.successCreateItem, newIncome));
     } catch (error) {
-      res.status(500).json(toAPIResponse(500, false, responses.serverError));
+      res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
 
@@ -32,9 +34,23 @@ export class IncomeController {
 
       return res
         .status(200)
-        .json(toAPIResponse(200, true, responses.successGetItem));
+        .json(toAPIResponse(200, true, responses.successGetItem, result));
     } catch (error) {
-      res.status(500).json(toAPIResponse(500, false, responses.serverError));
+      res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
+  static getTotalIncom = async (_: Request, res: Response) => {
+    try {
+      const total = await IncomeServices.getTotalIncome();
+      return res
+        .status(200)
+        .json(toAPIResponse(200, true, responses.successGetItem, { total }));
+    } catch (error) {
+      res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
 }
