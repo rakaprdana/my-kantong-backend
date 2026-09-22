@@ -8,11 +8,16 @@ export class IncomeServices {
     return await newItem.save();
   };
 
-  static getInfoIncome = async (page: number, limit: number) => {
-    return paginate(Income, {}, page, limit);
+  static getInfoIncome = async (
+    userId: string,
+    page: number,
+    limit: number,
+  ) => {
+    return paginate(Income, { userId }, page, limit);
   };
-  static getTotalIncome = async () => {
+  static getTotalIncome = async (userId: string) => {
     const resultTotal = await Income.aggregate([
+      { $match: { userId } },
       { $group: { _id: null, total: { $sum: "$income" } } },
     ]);
     return resultTotal[0]?.total ?? 0;

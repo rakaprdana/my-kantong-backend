@@ -2,10 +2,9 @@ import { Request, Response } from "express";
 import { OutcomeService } from "../services/outcome.service";
 import { toAPIResponse } from "../const/responses";
 import { responses } from "../const/const";
-import { AuthRequest } from "../interfaces/auth-request";
 
 export class OutcomeController {
-  static inputOutcome = async (req: AuthRequest, res: Response) => {
+  static inputOutcome = async (req: Request, res: Response) => {
     try {
       const newOutcome = await OutcomeService.addOutcome({
         ...req.body,
@@ -29,7 +28,7 @@ export class OutcomeController {
     }
   };
 
-  static getAllInfoOutcome = async (req: AuthRequest, res: Response) => {
+  static getAllInfoOutcome = async (req: Request, res: Response) => {
     try {
       const page = parseInt((req.query.page as string) || "1", 10);
       const limit = parseInt((req.query.limit as string) || "10", 10);
@@ -53,7 +52,7 @@ export class OutcomeController {
     }
   };
 
-  static getOutcomeById = async (req: AuthRequest, res: Response) => {
+  static getOutcomeById = async (req: Request, res: Response) => {
     try {
       const outcomeId = req.params.id;
       const outcome = await OutcomeService.getInfoOutcomeById(
@@ -75,7 +74,7 @@ export class OutcomeController {
     }
   };
 
-  static deleteOutcome = async (req: AuthRequest, res: Response) => {
+  static deleteOutcome = async (req: Request, res: Response) => {
     try {
       const outcomeId = req.params.id;
       const outcome = await OutcomeService.deletedOutcome(
@@ -97,7 +96,7 @@ export class OutcomeController {
     }
   };
 
-  static getTotalOutcome = async (req: AuthRequest, res: Response) => {
+  static getTotalOutcome = async (req: Request, res: Response) => {
     try {
       const total = await OutcomeService.getTotalOutcome(req.user._id);
       return res

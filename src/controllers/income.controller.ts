@@ -6,7 +6,10 @@ import { responses } from "../const/const";
 export class IncomeController {
   static inputIncome = async (req: Request, res: Response) => {
     try {
-      const newIncome = await IncomeServices.addIncome(req.body);
+      const newIncome = await IncomeServices.addIncome({
+        ...req.body,
+        userId: req.user._id,
+      });
       if (!newIncome) {
         res
           .status(400)
@@ -27,7 +30,11 @@ export class IncomeController {
     try {
       const page = parseInt((req.query.page as string) || "1");
       const limit = parseInt((req.query.page as string) || "10");
-      const result = await IncomeServices.getInfoIncome(page, limit);
+      const result = await IncomeServices.getInfoIncome(
+        req.user._id,
+        page,
+        limit,
+      );
       if (!result) {
         res.status(400).json(toAPIResponse(400, false, responses.errorGetItem));
       }
@@ -41,9 +48,9 @@ export class IncomeController {
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
-  static getTotalIncom = async (_: Request, res: Response) => {
+  static getTotalIncom = async (req: Request, res: Response) => {
     try {
-      const total = await IncomeServices.getTotalIncome();
+      const total = await IncomeServices.getTotalIncome(req.user._id);
       return res
         .status(200)
         .json(toAPIResponse(200, true, responses.successGetItem, { total }));

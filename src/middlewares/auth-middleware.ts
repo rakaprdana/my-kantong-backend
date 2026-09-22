@@ -1,12 +1,11 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import { IUser } from "../interfaces/user";
-import { AuthRequest } from "../interfaces/auth-request";
 import { responses } from "../const/const";
 import { toAPIResponse } from "../const/responses";
 import { User } from "../models/user.model";
 export const authMiddleware = async (
-  req: AuthRequest,
+  req: Request,
   res: Response,
   next: NextFunction,
 ) => {
