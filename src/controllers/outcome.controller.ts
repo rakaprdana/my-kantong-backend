@@ -2,13 +2,17 @@ import { Request, Response } from "express";
 import { OutcomeService } from "../services/outcome.service";
 import { toAPIResponse } from "../const/responses";
 import { responses } from "../const/const";
+import { AuthRequest } from "../interfaces/auth-request";
 
 export class OutcomeController {
-  static inputOutcome = async (req: Request, res: Response) => {
+  static inputOutcome = async (req: AuthRequest, res: Response) => {
     try {
-      const newOutcome = await OutcomeService.addOutcome(req.body);
+      const newOutcome = await OutcomeService.addOutcome({
+        ...req.body,
+        userId: req.user._id,
+      });
       if (!newOutcome) {
-        res
+        return res
           .status(400)
           .json(toAPIResponse(400, false, responses.errorCreateItem));
       }
@@ -19,18 +23,25 @@ export class OutcomeController {
           toAPIResponse(201, true, responses.successCreateItem, newOutcome),
         );
     } catch (error) {
-      res
+      return res
         .status(500)
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
-  static getAllInfoOutcome = async (req: Request, res: Response) => {
+
+  static getAllInfoOutcome = async (req: AuthRequest, res: Response) => {
     try {
       const page = parseInt((req.query.page as string) || "1", 10);
       const limit = parseInt((req.query.limit as string) || "10", 10);
-      const result = await OutcomeService.getInfoOutcome(page, limit);
+      const result = await OutcomeService.getInfoOutcome(
+        req.user._id,
+        page,
+        limit,
+      );
       if (!result) {
-        res.status(400).json(toAPIResponse(400, false, responses.errorGetItem));
+        return res
+          .status(400)
+          .json(toAPIResponse(400, false, responses.errorGetItem));
       }
       return res
         .status(200)
@@ -41,45 +52,54 @@ export class OutcomeController {
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
-  static getOutcomeById = async (req: Request, res: Response) => {
+
+  static getOutcomeById = async (req: AuthRequest, res: Response) => {
     try {
       const outcomeId = req.params.id;
       const outcome = await OutcomeService.getInfoOutcomeById(
         outcomeId as string,
+        req.user._id,
       );
       if (!outcome) {
-        res.status(400).json(toAPIResponse(400, false, responses.errorGetItem));
         return res
-          .status(200)
-          .json(toAPIResponse(200, true, responses.successGetItem, outcome));
+          .status(400)
+          .json(toAPIResponse(400, false, responses.errorGetItem));
       }
+      return res
+        .status(200)
+        .json(toAPIResponse(200, true, responses.successGetItem, outcome));
     } catch (error) {
       return res
         .status(500)
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
-  static deleteOutcome = async (req: Request, res: Response) => {
+
+  static deleteOutcome = async (req: AuthRequest, res: Response) => {
     try {
       const outcomeId = req.params.id;
-      const outcome = await OutcomeService.deletedOutcome(outcomeId as string);
+      const outcome = await OutcomeService.deletedOutcome(
+        outcomeId as string,
+        req.user._id,
+      );
       if (!outcome) {
-        res
+        return res
           .status(400)
           .json(toAPIResponse(400, false, responses.errorDeleteItem));
-        return res
-          .status(200)
-          .json(toAPIResponse(200, true, responses.successDeleteItem, outcome));
       }
+      return res
+        .status(200)
+        .json(toAPIResponse(200, true, responses.successDeleteItem, outcome));
     } catch (error) {
       return res
         .status(500)
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
-  static getTotalOutcome = async (_: Request, res: Response) => {
+
+  static getTotalOutcome = async (req: AuthRequest, res: Response) => {
     try {
-      const total = await OutcomeService.getTotalOutcome();
+      const total = await OutcomeService.getTotalOutcome(req.user._id);
       return res
         .status(200)
         .json(toAPIResponse(200, true, responses.successGetItem, { total }));
