@@ -1,6 +1,17 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { retryWithBackouff } from "../utils/retry";
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+let genAI: GoogleGenerativeAI | null = null;
+
+export function getGenAI() {
+  if (!genAI) {
+    if (!process.env.GEMINI_API_KEY) {
+      throw Error("GEMINI_API_KEY is missing, please check your .env");
+    }
+    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  }
+  return genAI;
+}
 
 const SYSTEM_INSTRUCTION = `
 Kamu adalah asisten keuangan pribadi untuk aplikasi My Kantong.
@@ -11,13 +22,11 @@ ATURAN KETAT:
 - JANGAN mengarang atau mengubah angka. Hanya gunakan angka yang diberikan dalam data.
 `;
 
+const PRIMARY_MODEL = "gemini-3.8-flash";
+const FALLBACK_MODEL = "gemini-3.5-flash-lite";
+
 export class GeminiService {
   static generaticChartInsight = async (label: string, chartData: unknown) => {
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.0-flase",
-      systemInstruction: SYSTEM_INSTRUCTION,
-    });
-
     const prompt = `
     Berikut data ${label} (dalam Rupiah):
     ${JSON.stringify(chartData)}
@@ -25,7 +34,27 @@ export class GeminiService {
     Berikan insight singkat: tren/nilai tertinggi-terendah, dan satu saran praktis untuk pengguna.
     `;
 
-    const result = await model.generateContentStream(prompt);
-    return (await result.response).text();
+    async function callModel(modelName: string) {
+      const model = getGenAI().getGenerativeModel({
+        model: modelName,
+        systemInstruction: SYSTEM_INSTRUCTION,
+      });
+
+      const result = await model.generateContentStream(prompt);
+      return (await result.response).text();
+    }
+
+    try {
+      return await retryWithBackouff(() => callModel(PRIMARY_MODEL), {
+        maxRetries: 2,
+        baseDelayMs: 800,
+      });
+    } catch (primaryError) {
+      console.warn(
+        `Primary model (${PRIMARY_MODEL}) failed, falling back...`,
+        primaryError,
+      );
+      return await callModel(FALLBACK_MODEL);
+    }
   };
 }
