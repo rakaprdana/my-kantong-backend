@@ -20,6 +20,16 @@ OutcomeRoute.get(
   authMiddleware,
   OutcomeController.getOutcomeById,
 );
+OutcomeRoute.get(
+  "/chart/monthly",
+  authMiddleware,
+  OutcomeController.getMonthlyChart,
+);
+OutcomeRoute.get(
+  "/chart/category",
+  authMiddleware,
+  OutcomeController.getCategoryChart,
+);
 OutcomeRoute.delete(
   "/outcome/:id",
   authMiddleware,

@@ -108,4 +108,39 @@ export class OutcomeController {
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
+
+  static getMonthlyChart = async (req: Request, res: Response) => {
+    try {
+      const year = parseInt(
+        (req.query.year as string) || `${new Date().getFullYear()}`,
+        10,
+      );
+      const chartData = await OutcomeService.getMonthlyOutcome(year);
+      return res.status(200).json(
+        toAPIResponse(200, true, responses.successGetItem, {
+          year,
+          chartData,
+        }),
+      );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
+
+  static getCategoryChart = async (req: Request, res: Response) => {
+    try {
+      const chartData = await OutcomeService.getOutcomeByCategory();
+      return res
+        .status(200)
+        .json(
+          toAPIResponse(200, true, responses.successGetItem, { chartData }),
+        );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
 }

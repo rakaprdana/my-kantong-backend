@@ -36,4 +36,38 @@ export class OutcomeService {
 
     return resultTotal[0]?.total ?? 0;
   };
+  static getMonthlyOutcome = async (year: number) => {
+    return Outcome.aggregate([
+      {
+        $match: {
+          is_delete: false,
+          date: {
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31T23:59:59.999Z`),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: { $month: "$date" },
+          total: { $sum: "$outcome" },
+        },
+      },
+      { $sort: { _id: 1 } },
+    ]);
+  };
+  static getOutcomeByCategory = async () => {
+    return Outcome.aggregate([
+      {
+        $match: { is_delete: false },
+      },
+      {
+        $group: {
+          _id: "$category",
+          total: { $sum: "$outcome" },
+        },
+      },
+      { $sort: { total: -1 } },
+    ]);
+  };
 }
