@@ -12,3 +12,8 @@ IncomeRoute.get(
   authMiddleware,
   IncomeController.getTotalIncom,
 );
+IncomeRoute.delete(
+  "/income/:id",
+  authMiddleware,
+  IncomeController.deleteIncome,
+);

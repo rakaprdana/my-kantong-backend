@@ -60,4 +60,25 @@ export class IncomeController {
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
+  static deleteIncome = async (req: Request, res: Response) => {
+    try {
+      const outcomeId = req.params.id;
+      const outcome = await IncomeServices.deletedIncome(
+        outcomeId as string,
+        req.user._id,
+      );
+      if (!outcome) {
+        return res
+          .status(400)
+          .json(toAPIResponse(400, false, responses.errorDeleteItem));
+      }
+      return res
+        .status(200)
+        .json(toAPIResponse(200, true, responses.successDeleteItem, outcome));
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
 }

@@ -5,6 +5,7 @@ const incomeSchema = new Schema({
   date: { type: Date },
   income: { type: Number },
   information: { type: String },
+  is_delete: { type: Boolean, default: false },
 });
 
 export const Income = model("Income", incomeSchema);
