@@ -83,7 +83,6 @@ export class OutcomeController {
         req.body,
       );
 
-      console.log(outcomeUpdate);
       if (!outcomeUpdate) {
         return res
           .status(404)

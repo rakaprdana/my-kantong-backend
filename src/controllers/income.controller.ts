@@ -60,6 +60,51 @@ export class IncomeController {
         .json(toAPIResponse(500, false, responses.serverError, error));
     }
   };
+  static getIncomeById = async (req: Request, res: Response) => {
+    try {
+      const incomeId = req.params.id;
+      const income = await IncomeServices.getIncomeById(
+        incomeId as string,
+        req.user._id,
+      );
+      if (!income) {
+        return res
+          .status(400)
+          .json(toAPIResponse(400, false, responses.errorGetItem));
+      }
+      return res
+        .status(200)
+        .json(toAPIResponse(200, true, responses.successGetItem, income));
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
+  static updateIncome = async (req: Request, res: Response) => {
+    try {
+      const incomeId = req.params.id;
+      const incomeUpdate = await IncomeServices.updateItemIncome(
+        incomeId as string,
+        req.user._id,
+        req.body,
+      );
+      if (!incomeUpdate) {
+        return res
+          .status(404)
+          .json(toAPIResponse(404, false, responses.errorNotFound));
+      }
+      return res
+        .status(200)
+        .json(
+          toAPIResponse(200, true, responses.successUpdateItem, incomeUpdate),
+        );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
   static deleteIncome = async (req: Request, res: Response) => {
     try {
       const outcomeId = req.params.id;
