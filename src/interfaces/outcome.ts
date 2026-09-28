@@ -4,3 +4,7 @@ export interface IOutcome {
   category: string;
   information: string;
 }
+
+export type UpdateOutcomeData = Partial<
+  Pick<IOutcome, "outcome" | "information">
+>;

@@ -74,6 +74,34 @@ export class OutcomeController {
     }
   };
 
+  static updateOutcome = async (req: Request, res: Response) => {
+    try {
+      const outcomeId = req.params.id;
+      const outcomeUpdate = await OutcomeService.updateItemOutcome(
+        outcomeId as string,
+        req.user._id,
+        req.body,
+      );
+
+      console.log(outcomeUpdate);
+      if (!outcomeUpdate) {
+        return res
+          .status(404)
+          .json(toAPIResponse(404, false, responses.errorNotFound));
+      }
+
+      return res
+        .status(200)
+        .json(
+          toAPIResponse(200, true, responses.successUpdateItem, outcomeUpdate),
+        );
+    } catch (error) {
+      return res
+        .status(500)
+        .json(toAPIResponse(500, false, responses.serverError, error));
+    }
+  };
+
   static deleteOutcome = async (req: Request, res: Response) => {
     try {
       const outcomeId = req.params.id;

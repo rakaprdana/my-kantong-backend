@@ -1,4 +1,4 @@
-import { IOutcome } from "../interfaces/outcome";
+import { IOutcome, UpdateOutcomeData } from "../interfaces/outcome";
 import { Outcome } from "../models/outcome.model";
 import { paginate } from "../utils/generatePagination";
 
@@ -19,6 +19,23 @@ export class OutcomeService {
   static getInfoOutcomeById = async (id: string, userId: string) => {
     const item = await Outcome.findOne({ _id: id, userId, is_delete: false });
     return item;
+  };
+  static updateItemOutcome = async (
+    id: string,
+    userId: string,
+    data: UpdateOutcomeData,
+  ) => {
+    const { outcome, information } = data;
+    const payload: UpdateOutcomeData = {};
+
+    if (outcome !== undefined) payload.outcome = outcome;
+    if (information !== undefined) payload.information = information;
+
+    return await Outcome.findOneAndUpdate(
+      { _id: id, userId, is_delete: false },
+      { $set: payload },
+      { new: true, runValidators: true },
+    );
   };
   static deletedOutcome = async (id: string, userId: string) => {
     const deleted = await Outcome.findOneAndUpdate(

@@ -20,6 +20,11 @@ OutcomeRoute.get(
   authMiddleware,
   OutcomeController.getOutcomeById,
 );
+OutcomeRoute.put(
+  "/outcome/:id",
+  authMiddleware,
+  OutcomeController.updateOutcome,
+);
 OutcomeRoute.get(
   "/chart/monthly",
   authMiddleware,
