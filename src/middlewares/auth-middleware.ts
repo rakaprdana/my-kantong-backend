@@ -9,13 +9,18 @@ export const authMiddleware = async (
   res: Response,
   next: NextFunction,
 ) => {
-  let token: string;
+  let token = req.cookies?.token;
+
   if (
+    !token &&
     req.headers.authorization &&
     req.headers.authorization.startsWith("Bearer ")
   ) {
+    token = req.headers.authorization.split(" ")[1];
+  }
+
+  if (token) {
     try {
-      token = req.headers.authorization.split(" ")[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as {
         id: string;
       };
@@ -30,7 +35,9 @@ export const authMiddleware = async (
       req.user = user as unknown as IUser;
       next();
     } catch (error) {
-      return res.status(400).json(toAPIResponse(400, false, "Invalid token"));
+      return res
+        .status(401)
+        .json(toAPIResponse(401, false, "Invalid or expired token"));
     }
   } else {
     return res

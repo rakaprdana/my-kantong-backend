@@ -8,8 +8,10 @@ import corsOptions from "./config/cors";
 import { OutcomeRoute } from "./routes/outcome.route";
 import { IncomeRoute } from "./routes/income.route";
 import { GeminiRoute } from "./routes/gemini.route";
+import cookieParser from "cookie-parser";
 
 const app = express();
+app.use(cookieParser());
 
 app.use(express.json());
 app.use(cors(corsOptions));

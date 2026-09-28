@@ -11,6 +11,7 @@ export const responses = {
   serverError: "A server error occurred",
   successSignUp: "Sign up was successful",
   successSignIn: "Sign in was successful",
+  successLogOut: "Log ou was successful",
   userIsExist: "User already exist",
   errorSignUp: "Invalid created new user",
   errorSignIn: "Invalid username or password",

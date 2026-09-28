@@ -39,4 +39,7 @@ export class AuthService {
       token: generateToken(user.id),
     };
   };
+  static logout = async () => {
+    return { success: true };
+  };
 }

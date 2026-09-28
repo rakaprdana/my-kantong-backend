@@ -5,3 +5,4 @@ export const UserRoute = Router();
 
 UserRoute.post("/register", AuthController.register);
 UserRoute.post("/login", AuthController.login);
+UserRoute.post("/logout", AuthController.logout);
